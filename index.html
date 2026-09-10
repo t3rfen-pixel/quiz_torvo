@@ -7,43 +7,107 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #0b0b0b;
+            color: #e0e0e0;
             text-align: center;
             padding: 20px;
             direction: rtl;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .quiz-container {
-            background: white;
-            max-width: 500px;
+            background: #141414;
+            max-width: 450px;
+            width: 100%;
             margin: auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+            border-top: 3px solid #ff0000;
+        }
+        .counter {
+            font-size: 14px;
+            color: #ff4d4d;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
         .question {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 17px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-weight: bold;
         }
         .options button {
             display: block;
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #333;
+            background-color: #1a1a1a;
+            color: #cccccc;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
+            transition: 0.2s;
+            text-align: right;
         }
-        .options button:hover {
-            background-color: #0056b3;
+        .options button:hover, .options button.selected {
+            background-color: #261111;
+            border-color: #ff0000;
+            color: #ffffff;
+        }
+        .next-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            background-color: #222;
+            color: #777;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: not-allowed;
+        }
+        .next-btn.active {
+            background-color: #ff0000;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
         }
         #result {
+            display: none;
+        }
+        .result-title {
             font-size: 20px;
+            color: #ff3333;
+            margin-bottom: 15px;
             font-weight: bold;
-            margin-top: 20px;
-            color: #28a745;
+        }
+        .result-desc {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .code-box {
+            background: #000;
+            border: 1px dashed #ff0000;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ff3333;
+            letter-spacing: 2px;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
+        }
+        .footer-note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -51,48 +115,159 @@
 
 <div class="quiz-container">
     <div id="quiz">
+        <div class="counter" id="counter-text">السؤال 1 / 10</div>
         <div class="question" id="question-text">جاري تحميل السؤال...</div>
         <div class="options" id="options-container"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()" disabled>التالي</button>
     </div>
-    <div id="result" style="display: none;"></div>
+
+    <div id="result">
+        <div class="result-title">تم تحليل الشخصية بنجاح</div>
+        <div class="result-desc">بناءً على إجاباتك وتحليل الخوارزمية، رمز نمط شخصيتك المعتمد هو:</div>
+        <div class="code-box" id="random-code">TRV-----</div>
+        <div class="footer-note">احتفظ بهذا الرمز للتحقق من نمطك.</div>
+    </div>
 </div>
 
 <script>
-    // ⬇️ السطر اللي اتغير هو السطر رقم 54 (تعديل رابط السيرفر)
     const SERVER_URL = "https://walking-edit-receive-administrators.trycloudflare.com/api/answer";
 
     const questions = [
         {
-            question: "ما هو أسلوبك المفضل في قضاء العطلة؟",
-            options: ["الاسترخاء على الشاطئ", "مغامرة في الجبال", "قراءة كتاب في المنزل", "حفلة مع الأصدقاء"]
+            question: "كيف تقيم قدرتك على التحكم في انفعالاتك؟",
+            options: [
+                "1. ضعيفة جداً وأغضب بسرعة",
+                "2. ممتازة ولا أظهر مشاعري",
+                "3. متوسطة حسب الموقف",
+                "4. أتحكم بظاهري والداخل يشتعل"
+            ]
         },
         {
-            question: "كيف تتعامل مع المواقف الصعبة؟",
-            options: ["بالتفكير الهادئ والتخطيط", "بالتفكير السريع والعمل المباشر", "طلب المساعدة من الآخرين", "تجنب الموقف حتى يهدأ"]
+            question: "عندما تواجه مشكلة معقدة، ما أول ما تفعله؟",
+            options: [
+                "1. أبحث عن شخص يحلها لي",
+                "2. أنسحب فوراً لتجنب الضغط",
+                "3. أدرس التفاصيل بهدوء وأخطط",
+                "4. أتوتر وأعصابي تنهار"
+            ]
+        },
+        {
+            question: "ما هي البيئة التي تشعر فيها براحة أكبر؟",
+            options: [
+                "1. الهدوء التام والوحدة",
+                "2. وسط الأصدقاء والصخب",
+                "3. الطبيعة المفتوحة",
+                "4. أمام الشاشات وأجهزة الألعاب"
+            ]
+        },
+        {
+            question: "كيف تتعامل مع أخطائك القديمة؟",
+            options: [
+                "1. أنساها كأن لم تكن",
+                "2. تأكلني من الداخل وألوم نفسي",
+                "3. أتعلم منها وأمضي قدماً",
+                "4. أنكرها تماماً"
+            ]
+        },
+        {
+            question: "ما هو شعورك تجاه التغييرات المفاجئة في حياتك؟",
+            options: [
+                "1. رعب وقلق شديد",
+                "2. حماس ومغامرة جديدة",
+                "3. برود تام وعدم اكتراث",
+                "4. ارتباك مؤقت ثم تأقلم"
+            ]
+        },
+        {
+            question: "عندما يخطئ شخص بحقك، كيف تكون ردة فعلك؟",
+            options: [
+                "1. أنتقم فوراً وبنفس القوة",
+                "2. أصمت وأسجلها في الذاكرة",
+                "3. أسامح وأنسى بسرعة",
+                "4. أواجهه ببرود وأحرجه"
+            ]
+        },
+        {
+            question: "كيف ترى مستقبل، هل تنظر له بتفاؤل؟",
+            options: [
+                "1. أسود ومليء بالمخاوف",
+                "2. متفائل وأخطط له بدقة",
+                "3. لا أبالي، أعيش اللحظة",
+                "4. غامض ومثير للاهتمام"
+            ]
+        },
+        {
+            question: "ما هو طابعك الغالب بين الناس؟",
+            options: [
+                "1. الغموض وقلة الكلام",
+                "2. المرح ونشر الطاقة الإيجابية",
+                "3. الجدية المفرطة والحزم",
+                "4. العصبية وسرعة الانفعال"
+            ]
+        },
+        {
+            question: "هل تسيطر عليك كثرة الأفكار ليلاً؟",
+            options: [
+                "1. نعم دائماً ولا أستطيع النوم",
+                "2. أحياناً عندما أواجه ضغوطاً",
+                "3. نادراً، أنام فور وضع رأس ع وسادة",
+                "4. تفكيري يبدأ فقط وقت النوم"
+            ]
+        },
+        {
+            question: "لو خيروك بين العزلة التامة أو الشهرة، تختار؟",
+            options: [
+                "1. العزلة بلا تردد",
+                "2. الشهرة والأضواء",
+                "3. حياة هادئة مع شخص واحد",
+                "4. أكون خلف الكواليس ومؤثر بصمت"
+            ]
         }
     ];
 
     let currentQuestionIndex = 0;
     const userAnswers = [];
+    let selectedOptionText = null;
 
     function showQuestion() {
         const q = questions[currentQuestionIndex];
+        document.getElementById("counter-text").innerText = `السؤال ${currentQuestionIndex + 1} / ${questions.length}`;
         document.getElementById("question-text").innerText = q.question;
+        
         const optionsContainer = document.getElementById("options-container");
         optionsContainer.innerHTML = "";
+        selectedOptionText = null;
+        
+        const nextBtn = document.getElementById("next-btn");
+        nextBtn.classList.remove("active");
+        nextBtn.disabled = true;
 
         q.options.forEach(option => {
             const btn = document.createElement("button");
             btn.innerText = option;
-            btn.onclick = () => selectAnswer(option);
+            btn.onclick = () => selectAnswer(btn, option);
             optionsContainer.appendChild(btn);
         });
     }
 
-    function selectAnswer(answer) {
+    function selectAnswer(btn, option) {
+        document.querySelectorAll(".options button").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        selectedOptionText = option;
+
+        const nextBtn = document.getElementById("next-btn");
+        nextBtn.classList.add("active");
+        nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+        if (!selectedOptionText) return;
+
+        sendAnswerToServer(currentQuestionIndex + 1, selectedOptionText);
+
         userAnswers.push({
             question: questions[currentQuestionIndex].question,
-            answer: answer
+            answer: selectedOptionText
         });
 
         currentQuestionIndex++;
@@ -104,27 +279,32 @@
         }
     }
 
-    function finishQuiz() {
-        document.getElementById("quiz").style.display = "none";
-        const resultDiv = document.getElementById("result");
-        resultDiv.style.display = "block";
-        resultDiv.innerText = "جاري تحليل إجاباتك...";
-
+    function sendAnswerToServer(qIndex, answer) {
         fetch(SERVER_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ answers: userAnswers })
+            body: JSON.stringify({
+                user: "TORVO",
+                questionIndex: qIndex,
+                answer: answer
+            })
         })
         .then(response => response.json())
-        .then(data => {
-            resultDiv.innerText = "شكراً لمشاركتك! تم تحليلك بنجاح.";
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            resultDiv.innerText = "شكراً لمشاركتك!";
-        });
+        .then(data => console.log("Sent successfully:", data))
+        .catch(error => console.error("Error:", error));
+    }
+
+    function finishQuiz() {
+        document.getElementById("quiz").style.display = "none";
+        document.getElementById("result").style.display = "block";
+        
+        const randomNum = Math.floor(100 + Math.random() * 900);
+        const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        const generatedCode = `TRV-${randomLetter}${randomNum}H`;
+        
+        document.getElementById("random-code").innerText = generatedCode;
     }
 
     showQuestion();
