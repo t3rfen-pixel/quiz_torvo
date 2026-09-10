@@ -48,9 +48,31 @@
         .warning-text {
             font-size: 14px;
             color: #ff3333;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-weight: bold;
             line-height: 1.6;
+        }
+        .name-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            color: #ffffff;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .name-input:focus {
+            border-color: #ff0000;
+            outline: none;
+        }
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 12px;
+            margin-bottom: 15px;
+            display: none;
         }
         .enter-btn {
             display: block;
@@ -160,6 +182,8 @@
         <div class="main-title">اختبار الشخصية</div>
         <div class="sub-title">اعرف شخصيتك بدقة</div>
         <div class="warning-text">يجب أن تجاوب بكل صدق وأمانة لكي نقول رمز شخصيتك بأفضل وجه</div>
+        <input type="text" id="username-input" class="name-input" placeholder="اكتب اسمك للبدء..." autocomplete="off">
+        <div class="error-msg" id="error-msg">الرجاء إدخال اسمك أولاً للمتابعة!</div>
         <button class="enter-btn" onclick="startQuiz()">دخول</button>
     </div>
 
@@ -182,6 +206,7 @@
 
 <script>
     const SERVER_URL = "https://walking-edit-receive-administrators.trycloudflare.com/api/answer";
+    let userName = "";
 
     const questions = [
         {
@@ -280,6 +305,17 @@
     let selectedOptionText = null;
 
     function startQuiz() {
+        const inputVal = document.getElementById("username-input").value.trim();
+        const errorMsg = document.getElementById("error-msg");
+
+        if (inputVal === "") {
+            errorMsg.style.display = "block";
+            return;
+        }
+
+        errorMsg.style.display = "none";
+        userName = inputVal;
+
         document.getElementById("welcome-screen").style.display = "none";
         document.getElementById("quiz-screen").style.display = "block";
         showQuestion();
@@ -337,7 +373,7 @@
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                user: "TORVO",
+                user: userName,
                 questionIndex: qIndex,
                 answer: answer
             })
@@ -360,4 +396,5 @@
 </script>
 
 </body>
-</html>
+    </html>
+    
