@@ -3,348 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>اختبار بوصلة الشخصية الشامل</title>
+    <title>اختبار الشخصية</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            color: #f8fafc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            background: #1e293b;
-            width: 100%;
-            max-width: 600px;
-            padding: 35px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border: 1px solid #334155;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
             text-align: center;
-            position: relative;
+            padding: 20px;
+            direction: rtl;
         }
-        h1 {
-            color: #38bdf8;
-            font-size: 28px;
-            margin-bottom: 12px;
-        }
-        p.subtitle {
-            color: #94a3b8;
-            font-size: 15px;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .input-group {
-            margin-bottom: 25px;
-            text-align: right;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #cbd5e1;
-            font-weight: 600;
-            font-size: 15px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            border: 2px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-            transition: 0.3s;
-        }
-        input[type="text"]:focus {
-            border-color: #38bdf8;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-        }
-        .btn-main {
-            background: #38bdf8;
-            color: #0f172a;
-            border: none;
-            padding: 16px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-        }
-        .btn-main:hover {
-            background: #0284c7;
-            color: #fff;
-            transform: translateY(-2px);
-        }
-        .question-box {
-            display: none;
-            text-align: right;
-        }
-        .question-box.active {
-            display: block;
-        }
-        .question-title {
-            font-size: 19px;
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        .option-btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            margin: 12px 0;
-            background: #334155;
-            color: #fff;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            font-size: 15px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: right;
-            line-height: 1.4;
-        }
-        .option-btn:hover {
-            border-color: #38bdf8;
-            background: #1e293b;
-            color: #38bdf8;
-            padding-right: 22px;
-        }
-        .progress-container {
-            display: none;
-            margin-bottom: 25px;
-        }
-        .progress-bar {
-            width: 100%;
-            background-color: #334155;
+        .quiz-container {
+            background: white;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
             border-radius: 10px;
-            height: 10px;
-            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .progress-fill {
-            height: 100%;
-            background-color: #38bdf8;
-            width: 0%;
-            transition: width 0.4s ease;
+        .question {
+            font-size: 18px;
+            margin-bottom: 15px;
         }
-        .progress-text {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: 8px;
-            text-align: left;
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
         }
-        #result-screen {
-            display: none;
+        .options button:hover {
+            background-color: #0056b3;
         }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border-left-color: #38bdf8;
-            animation: spin 1s linear infinite;
-            margin: 25px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        #result {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #28a745;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="start-screen">
-        <h1>🔮 اختبار بوصلة الشخصية الشامل</h1>
-        <p class="subtitle">قم بالإجابة عن الأسئلة العشرة التالية بدقة للحصول على تقرير تحليلي وافٍ حول نمط شخصيتك وطبيعة تعاملك مع الأمور</p>
-        <div class="input-group">
-            <label for="username">الاسم أو اللقب الخاص بك:</label>
-            <input type="text" id="username" placeholder="اكتب اسمك هنا للبدء...">
-        </div>
-        <button class="btn-main" onclick="startQuiz()">بدء الاختبار التحليلي</button>
+<div class="quiz-container">
+    <div id="quiz">
+        <div class="question" id="question-text">جاري تحميل السؤال...</div>
+        <div class="options" id="options-container"></div>
     </div>
-
-    <div class="progress-container" id="progress-container">
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        <div class="progress-text" id="progress-text">السؤال 1 من 10</div>
-    </div>
-
-    <div id="quiz-screen">
-        <div id="q1" class="question-box">
-            <p class="question-title">1. عند تعرضك لموقف ضاغط أو مشكلة غير متوقعة، ما هو سلوكك الأولي؟</p>
-            <button class="option-btn" onclick="selectAnswer('التفكير الهادئ والتخطيط')">التفكير العقلاني الهادئ وتحليل أسباب المشكلة لوضع حل</button>
-            <button class="option-btn" onclick="selectAnswer('التصرف السريع والمباشر')">التحرك السريع والمباشر ومواجهة الأزمة فوراً</button>
-            <button class="option-btn" onclick="selectAnswer('استشارة المقربين')">التواصل مع شخص مقرب وذو ثقة للحصول على المشورة</button>
-            <button class="option-btn" onclick="selectAnswer('الابتعاد المؤقت')">أخذ مساحة شخصية بعيداً عن التوتر لتقييم الموقف بوضوح</button>
-        </div>
-
-        <div id="q2" class="question-box">
-            <p class="question-title">2. ما هي الطريقة المثالية التي تفضلها لقضاء وقت فراغك؟</p>
-            <button class="option-btn" onclick="selectAnswer('الألعاب والتحديات')">ممارسة الألعاب والتحديات التنافسية الذكية</button>
-            <button class="option-btn" onclick="selectAnswer('الأنشطة الاجتماعية')">الخروج وقضاء الأوقات برفقة الأصدقاء</button>
-            <button class="option-btn" onclick="selectAnswer('الاسترخاء والمشاهدة')">الاسترخاء بالبيت ومتابعة الأفلام أو صناع المحتوى</button>
-            <button class="option-btn" onclick="selectAnswer('تعلم مهارة جديدة')">تطوير الذات وتجربة أفكار أو مهارات جديدة</button>
-        </div>
-
-        <div id="q3" class="question-box">
-            <p class="question-title">3. أي الصفات التالية تشعر أنها تميز أسلوبك الشخصي أكثر من غيرها؟</p>
-            <button class="option-btn" onclick="selectAnswer('قوة الملاحظة')">قوة الملاحظة العالية والاهتمام بأدق التفاصيل</button>
-            <button class="option-btn" onclick="selectAnswer('الولاء والجدعنة')">الولاء المطلق والوقوف الدائم بجانب أصدقائي</button>
-            <button class="option-btn" onclick="selectAnswer('الضبط والهدوء')">الهدوء العميق والقدرة على ضبط النفس في المواقف الصعبة</button>
-            <button class="option-btn" onclick="selectAnswer('الوضوح والصراحة')">الصراحة والوضوح المباشر وتجنب المواربة</button>
-        </div>
-
-        <div id="q4" class="question-box">
-            <p class="question-title">4. كيف تتعامل مع القرارات المصيرية التي تتطلب حسماً؟</p>
-            <button class="option-btn" onclick="selectAnswer('الحساب والدراسة')">أحسب السلبيات والإيجابيات بدقة قبل اتخاذ أي خطوة</button>
-            <button class="option-btn" onclick="selectAnswer('الاعتماد على الحدس')">أعتمد على إحساسي وحدسي الداخلي بشكل كبير</button>
-            <button class="option-btn" onclick="selectAnswer('استشارة ذوي الخبرة')">أسأل أهل الخبرة وأطرح الأمر للمناقشة مع المقربين</button>
-            <button class="option-btn" onclick="selectAnswer('التأجيل والتأني')">أفضل عدم العجلة وأترك القرار لنفسه مع الوقت</button>
-        </div>
-
-        <div id="q5" class="question-box">
-            <p class="question-title">5. عندما يقدم شخص على تصرف يثير انزعاجك، كيف تكون ردة فعلك؟</p>
-            <button class="option-btn" onclick="selectAnswer('المواجهة الفورية')">أواجهه في نفس اللحظة بوضوح حتى نفهم الموقف</button>
-            <button class="option-btn" onclick="selectAnswer('التجاهل وتغيير التعامل')">أتجاهله تماماً وأبدأ بتغيير حدود المعاملة معه</button>
-            <button class="option-btn" onclick="selectAnswer('البحث عن أسباب')">أعطيه عذراً وأحاول فهم الدوافع التي جعلته يتصرف هكذا</button>
-            <button class="option-btn" onclick="selectAnswer('الصمت وتخزين الموقف')">ألتزم الصمت وأخزن الموقف لحين اتخاذ قرار بالابتعاد</button>
-        </div>
-
-        <div id="q6" class="question-box">
-            <p class="question-title">6. ما هي بيئة العمل أو النشاط التي تشعر فيها بأقصى طاقاتك؟</p>
-            <button class="option-btn" onclick="selectAnswer('العمل الفردي المستقل')">العمل الفردي الذي يمنحني حرية التركيز والإبداع</button>
-            <button class="option-btn" onclick="selectAnswer('العمل الجماعي التنافسي')">العمل الجماعي التنافسي المليء بالحماس والحركة</button>
-            <button class="option-btn" onclick="selectAnswer('التنظيم والقيادة')">تولي التخطيط والقيادة وتنظيم الأمور للآخرين</button>
-            <button class="option-btn" onclick="selectAnswer('المرونة بدون ضغوط')">العمل في بيئة هادئة مرنة بدون مواعيد أو ضغوط صارمة</button>
-        </div>
-
-        <div id="q7" class="question-box">
-            <p class="question-title">7. عند التعرف على أشخاص جدد لأول مرة، كيف تبدو في نظرهم؟</p>
-            <button class="option-btn" onclick="selectAnswer('غامض وقليل الكلام')">شخص هادئ وغامض يراقب قبل أن يتحدث</button>
-            <button class="option-btn" onclick="selectAnswer('ودود واجتماعي')">شخص ودود للغاية وسهل الانخراط في الحديث</button>
-            <button class="option-btn" onclick="selectAnswer('واثق ومباشر')">شخص واثق من نفسه وصريح في أفكاره</button>
-            <button class="option-btn" onclick="selectAnswer('مرح وفكاهي')">شخص مرح يضفي جو من الدعابة والراحة على المجلس</button>
-        </div>
-
-        <div id="q8" class="question-box">
-            <p class="question-title">8. كيف تقيم علاقتك بالتكنولوجيا والألعاب والوسائط الحديثة؟</p>
-            <button class="option-btn" onclick="selectAnswer('شغوف ومتابع دائم')">شغوف جداً وأتابع التحديثات والتطورات أولاً بأول</button>
-            <button class="option-btn" onclick="selectAnswer('استخدام للترفيه فقط')">أستخدمها للتسلية وتقضية وقت الفراغ دون تعمق</button>
-            <button class="option-btn" onclick="selectAnswer('أداة للتواصل والعمل')">أراها أداة عمل وتواصل أساسية لا يمكن الاستغناء عنها</button>
-            <button class="option-btn" onclick="selectAnswer('متزن وغير متعلق')">استخدام متزن وغير متعلق بأي تطبيق أو لعبة بشكل خاص</button>
-        </div>
-
-        <div id="q9" class="question-box">
-            <p class="question-title">9. ما هو العامل الأهم بالنسبة لك للحفاظ على استقرار علاقاتك؟</p>
-            <button class="option-btn" onclick="selectAnswer('الاحترام المتبادل')">الاحترام المتبادل وعدم تجاوز الحدود الشخصية</button>
-            <button class="option-btn" onclick="selectAnswer('الصدق والدعم')">الصدق الدائم والدعم المتبادل في الأوقات الصعبة</button>
-            <button class="option-btn" onclick="selectAnswer('التفاهم والحرية')">التفاهم ومنح كل طرف حريته ومساحته الخاصة</button>
-            <button class="option-btn" onclick="selectAnswer('المرح والمشاركة')">المشاركة الفعالة وخلق ذكريات ممتعة معاً</button>
-        </div>
-
-        <div id="q10" class="question-box">
-            <p class="question-title">10. عند الوصول لختام هذا الاختبار، كيف تنظر إلى النتيجة المتوقعة؟</p>
-            <button class="option-btn" onclick="selectAnswer('فضول لمعرفة التحليل')">فضول كبير لمعرفة ما إذا كان التحليل يعبر عني بدقة</button>
-            <button class="option-btn" onclick="selectAnswer('تجربة ممتعة فقط')">اعتبارها تجربة ممتعة لتسلية الوقت واكتشاف الذات</button>
-            <button class="option-btn" onclick="selectAnswer('مشاركة النتيجة')">الرغبة في مشاركة النتيجة ومقارنتها مع الأصدقاء</button>
-            <button class="option-btn" onclick="selectAnswer('تقييم الذات')">فرصة لإعادة التفكير في صفاتي وطريقة تعاملي مع الأمور</button>
-        </div>
-    </div>
-
-    <div id="result-screen">
-        <div id="loading">
-            <div class="spinner"></div>
-            <p style="color: #cbd5e1; font-size: 16px;">جاري معالجة الإجابات وإرسال البيانات للتحليل...</p>
-        </div>
-        <div id="final-msg" style="display: none;">
-            <h1 style="color: #4ade80; font-size: 30px;">تم إرسال إجاباتك بنجاح! 🎉</h1>
-            <p style="color: #94a3b8; margin-top: 18px; line-height: 1.7; font-size: 16px;">شكراً لمشاركتك معنا! تم تسجيل إجاباتك الـ 10 بالكامل، وصاحب الرابط قد استلم التقرير الخاص باختبار شخصيتك الآن عبر السيرفر.</p>
-        </div>
-    </div>
+    <div id="result" style="display: none;"></div>
 </div>
 
 <script>
-    const SERVER_URL = "https://e9c3e4d0495e44b3-154-178-53-38.serveousercontent.com/api/answer";
-    
-    let username = "";
-    let currentQuestion = 1;
-    const totalQuestions = 10;
-    let userAnswers = [];
+    // ⬇️ السطر اللي اتغير هو السطر رقم 54 (تعديل رابط السيرفر)
+    const SERVER_URL = "https://walking-edit-receive-administrators.trycloudflare.com/api/answer";
 
-    function startQuiz() {
-        const inputName = document.getElementById('username').value.trim();
-        if (!inputName) {
-            alert("يرجى إدخال الاسم أو اللقب أولاً لتتمكن من بدء الاختبار!");
-            return;
+    const questions = [
+        {
+            question: "ما هو أسلوبك المفضل في قضاء العطلة؟",
+            options: ["الاسترخاء على الشاطئ", "مغامرة في الجبال", "قراءة كتاب في المنزل", "حفلة مع الأصدقاء"]
+        },
+        {
+            question: "كيف تتعامل مع المواقف الصعبة؟",
+            options: ["بالتفكير الهادئ والتخطيط", "بالتفكير السريع والعمل المباشر", "طلب المساعدة من الآخرين", "تجنب الموقف حتى يهدأ"]
         }
-        username = inputName;
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('progress-container').style.display = 'block';
-        document.getElementById('quiz-screen').style.display = 'block';
-        document.getElementById('q1').classList.add('active');
-        updateProgress();
+    ];
+
+    let currentQuestionIndex = 0;
+    const userAnswers = [];
+
+    function showQuestion() {
+        const q = questions[currentQuestionIndex];
+        document.getElementById("question-text").innerText = q.question;
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        q.options.forEach(option => {
+            const btn = document.createElement("button");
+            btn.innerText = option;
+            btn.onclick = () => selectAnswer(option);
+            optionsContainer.appendChild(btn);
+        });
     }
 
-    function updateProgress() {
-        const percentage = ((currentQuestion - 1) / totalQuestions) * 100;
-        document.getElementById('progress-fill').style.width = percentage + '%';
-        document.getElementById('progress-text').innerText = `السؤال ${currentQuestion} من ${totalQuestions}`;
-    }
+    function selectAnswer(answer) {
+        userAnswers.push({
+            question: questions[currentQuestionIndex].question,
+            answer: answer
+        });
 
-    function selectAnswer(answerText) {
-        userAnswers.push(answerText);
-        
-        document.getElementById(`q${currentQuestion}`).classList.remove('active');
-        currentQuestion++;
+        currentQuestionIndex++;
 
-        if (currentQuestion <= totalQuestions) {
-            document.getElementById(`q${currentQuestion}`).classList.add('active');
-            updateProgress();
+        if (currentQuestionIndex < questions.length) {
+            showQuestion();
         } else {
-            document.getElementById('progress-fill').style.width = '100%';
-            document.getElementById('progress-text').innerText = `اكتملت الأسئلة (10/10)`;
-            sendAllData();
+            finishQuiz();
         }
     }
 
-    async function sendAllData() {
-        document.getElementById('quiz-screen').style.display = 'none';
-        document.getElementById('progress-container').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'block';
+    function finishQuiz() {
+        document.getElementById("quiz").style.display = "none";
+        const resultDiv = document.getElementById("result");
+        resultDiv.style.display = "block";
+        resultDiv.innerText = "جاري تحليل إجاباتك...";
 
-        const payload = {
-            name: username,
-            answers: userAnswers,
-            formattedResult: `الاسم: ${username} | الإجابات: ${userAnswers.join(' | ')}`
-        };
-
-        try {
-            await fetch(SERVER_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-        } catch (err) {
-            console.error("خطأ في الاتصال بالسيرفر", err);
-        }
-
-        setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('final-msg').style.display = 'block';
-        }, 2000);
+        fetch(SERVER_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ answers: userAnswers })
+        })
+        .then(response => response.json())
+        .then(data => {
+            resultDiv.innerText = "شكراً لمشاركتك! تم تحليلك بنجاح.";
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            resultDiv.innerText = "شكراً لمشاركتك!";
+        });
     }
+
+    showQuestion();
 </script>
 
 </body>
