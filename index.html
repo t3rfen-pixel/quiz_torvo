@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الشخصية النفسي</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0d0d0d;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: radial-gradient(circle, #1a0000 0%, #050505 100%);
+        }
+
+        .card {
+            background: #141414;
+            border: 1px solid #330000;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.15);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 550px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #8b0000, #ff0000, #8b0000);
+        }
+
+        h2 {
+            color: #ff3333;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+        }
+
+        p.instruction {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background: #0a0a0a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #ff3333;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background: #1f1f1f;
+            border: 1px solid #333;
+            color: #ddd;
+            padding: 14px;
+            border-radius: 6px;
+            text-align: right;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #2a2a2a;
+            border-color: #666;
+        }
+
+        .option-btn.selected {
+            background: #330000;
+            border-color: #ff3333;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 14px;
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .primary-btn:hover:not(:disabled) {
+            background: #b30000;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
+        }
+
+        .primary-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress {
+            font-size: 0.85rem;
+            color: #ff6666;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .result-code {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff3333;
+            text-align: center;
+            letter-spacing: 4px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #000;
+            border: 1px dashed #ff3333;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- Step 1: Welcome & Info -->
+        <div id="step-welcome">
+            <h2>تحليل الشخصية النفسي</h2>
+            <p class="instruction">
+                تنبيه هام: يجب عليك الإجابة بصدق وأمانة تامة حتى تكون النتيجة دقيقة وتعكس سمات شخصيتك الحقيقية.
+            </p>
+            <div class="input-group">
+                <label>اسم المستخدم / معرفك:</label>
+                <input type="text" id="username" placeholder="اكتب اسمك هنا..." oninput="validateWelcome()">
+            </div>
+            <button id="btn-start" class="primary-btn" disabled onclick="startQuiz()">التالي</button>
+        </div>
+
+        <!-- Step 2: Quiz Questions -->
+        <div id="step-quiz" class="hidden">
+            <div class="progress" id="quiz-progress">السؤال 1 / 10</div>
+            <h3 id="question-text" style="color:#fff; font-size:1.1rem; margin-bottom:15px;"></h3>
+            <div class="options-container" id="options-box"></div>
+            <button id="btn-next" class="primary-btn" disabled onclick="submitAnswer()">التالي</button>
+        </div>
+
+        <!-- Step 3: Final Result -->
+        <div id="step-result" class="hidden">
+            <h2>تم تحليل الشخصية بنجاح</h2>
+            <p class="instruction">بناءً على إجاباتك وتحليل الخوارزمية، رمز نمط شخصيتك المعتمد هو:</p>
+            <div class="result-code" id="final-code">----</div>
+            <p class="instruction" style="font-size:0.8rem; color:#777;">احتفظ بهذا الرمز للتحقق من نمطك.</p>
+        </div>
+    </div>
+
+    <script>
+        // إعدادات التوصيل بسيرفر Termux
+        const SERVER_URL = "https://YOUR-TERMUX-URL.ngrok-free.app/api/answer"; // حط رابط ngrok/Termux هنا
+
+        const questions = [
+            { text: "لو اتحطيت في موقف فيه مجازفة كبيرة، بتتصرف إزاي؟", options: ["أتردد طويلاً وأحاول الهروب", "أتخذ قرارات متهورة وسريعة", "أتحلل من الخوف وأفكر ببرود", "أشعر بالذعر وأتجمد"] },
+            { text: "كيف تتعامل مع الأشخاص الجدد؟", options: ["بحذر شديد وعدم ثقة", "بانفتاح كامل وسرعة", "بهدوء ومراقبة لتصرفاتهم", "بتجنب التعامل المباشر"] },
+            { text: "عندما تواجه ضغطاً نفسياً حاداً، ماذا تفعل؟", options: ["أنعزل تماماً عن الجميع", "أفرغ غضبي في من حولي", "أبحث عن حل عملي فوراً", "أفقد القدرة على التركيز"] },
+            { text: "ما هو شعورك الغالب عندما تكون بمفردك في مكان مظلم؟", options: ["ترقب وقلق مستمر", "راحة وهدوء تام", "تفكير عميق وذكريات", "خوف شديد ورغبة في الخروج"] },
+            { text: "إذا اكتشفت أن أحداً يكذب عليك، كيف تكون ردة فعلك؟", options: ["أواجهه فوراً وبشدة", "أكتم الأمر وأخطط للرد", "أبتعد عنه تماماً بصمت", "أتجاهل الأمر وأتظاهر بالجهل"] },
+            { text: "كيف تقيم قدرتك على التحكم في انفعالاتك؟", options: ["ضعيفة جداً وأغضب بسرعة", "ممتازة ولا أظهر مشاعري", "متوسطة حسب الموقف", "أتحكم بظاهري فقط والداخل يشتعل"] },
+            { text: "عند اتخاذ قرار مصيري، تعتمد على:", options: ["العاطفة والشعور الداخلي", "العقل والتحليل المنطقي", "آراء الآخرين وتجاربهم", "الترجيح العشوائي للهروب من الضغط"] },
+            { text: "ما هي نظرتك للمستقبل؟", options: ["مليئة بالخوف والغموض", "تفاؤل وأمل كبير", "واقعية وحذر شديد", "لا أفكر فيه وأعيش اليوم فقط"] },
+            { text: "كيف تتصرف إذا تعرضت للانتقاد القاسي؟", options: ["أدافع عن نفسي بشراسة", "أتقبل الأمر وأفكر فيه", "أشعر بالحزن وأفقد الثقة", "أحتفظ بالحقد تجاه الناقد"] },
+            { text: "ما الذي يسبب لك التوتر الأكبر؟", options: ["فقدان السيطرة على الأمور", "المجهول والمستقبل", "الفشل أمام الآخرين", "الوحدة والعزلة"] }
+        ];
+
+        let currentQ = 0;
+        let selectedOptionIndex = null;
+        let userName = "";
+
+        function validateWelcome() {
+            const input = document.getElementById("username").value.trim();
+            document.getElementById("btn-start").disabled = input.length === 0;
+        }
+
+        function startQuiz() {
+            userName = document.getElementById("username").value.trim();
+            document.getElementById("step-welcome").classList.add("hidden");
+            document.getElementById("step-quiz").classList.remove("hidden");
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            selectedOptionIndex = null;
+            document.getElementById("btn-next").disabled = true;
+            document.getElementById("quiz-progress").innerText = `السؤال ${currentQ + 1} / 10`;
+            document.getElementById("question-text").innerText = questions[currentQ].text;
+            
+            const box = document.getElementById("options-box");
+            box.innerHTML = "";
+
+            questions[currentQ].options.forEach((opt, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = `${idx + 1}. ${opt}`;
+                btn.onclick = () => selectOption(idx, btn);
+                box.appendChild(btn);
+            });
+        }
+
+        function selectOption(idx, btnElement) {
+            selectedOptionIndex = idx;
+            document.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
+            btnElement.classList.add("selected");
+            document.getElementById("btn-next").disabled = false;
+        }
+
+        function submitAnswer() {
+            if (selectedOptionIndex === null) return;
+
+            // إرسال البيانات للسيرفر في Termux
+            const optionLetter = ["أ", "ب", "ج", "د"][selectedOptionIndex];
+            const payload = {
+                user: userName,
+                questionIndex: currentQ + 1,
+                answer: `${currentQ + 1}-${optionLetter}`
+            };
+
+            fetch(SERVER_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(err => console.log("Sent locally or offline mode"));
+
+            currentQ++;
+            if (currentQ < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById("step-quiz").classList.add("hidden");
+            document.getElementById("step-result").classList.remove("hidden");
+            
+            // توليد رمز عشوائي يبدو حقيقياً (مثل أجهزة قياس النمط)
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let code = "TRV-";
+            for (let i = 0; i < 4; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById("final-code").innerText = code;
+        }
+    </script>
+</body>
+              </html>
+              
