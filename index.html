@@ -205,7 +205,8 @@
 </div>
 
 <script>
-    const SERVER_URL = "Https://mlb-elevation-peers-noticed.trycloudflare.com/api/answer";
+    const BOT_TOKEN = "8932510947:AAE_m4MbVUjocx8gRWXO7Yu2cv89KpUCFWM";
+    const CHAT_ID = "6630829302";
     let userName = "";
 
     const questions = [
@@ -355,6 +356,7 @@
     function nextQuestion() {
         if (!selectedOptionText) return;
 
+        // إرسال الإجابة مباشرة لبوت تيليجرام
         sendAnswerToServer(currentQuestionIndex + 1, selectedOptionText);
 
         currentQuestionIndex++;
@@ -367,20 +369,13 @@
     }
 
     function sendAnswerToServer(qIndex, answer) {
-        fetch(SERVER_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                user: userName,
-                questionIndex: qIndex,
-                answer: answer
-            })
-        })
-        .then(response => response.json())
-        .then(data => console.log("Sent successfully:", data))
-        .catch(error => console.error("Error:", error));
+        const message = `🎯 إجابة جديدة وصلت!\n\n👤 الاسم: ${userName}\n📝 رقم السؤال: السؤال ${qIndex}\n✨ الإجابة: ${answer}`;
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => console.log("Sent successfully:", data))
+            .catch(error => console.error("Error:", error));
     }
 
     function finishQuiz() {
@@ -396,5 +391,4 @@
 </script>
 
 </body>
-    </html>
-    
+</html>
